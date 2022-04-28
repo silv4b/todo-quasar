@@ -2,7 +2,7 @@
   <q-page class="bg-grey-3 column">
     <q-list class="bg-white" separator bordered>
       <q-item
-        v-for="(task, index) in tasks"
+        v-for="task in tasks"
         :key="task.index"
         @click="task.done = !task.done"
         :class="{ 'done bg-blue-grey-2': task.done }"
@@ -23,7 +23,7 @@
         <!-- <q-item-section v-if="task.done" side> 🍔 </q-item-section> -->
         <q-item-section v-if="task.done" side>
           <q-btn
-            @click.stop="deleteTask(index)"
+            @click.stop="confirmDelete(task)"
             flat
             round
             dense
@@ -38,9 +38,34 @@
 
 <script>
 import { defineComponent } from "vue";
+import { useQuasar } from "quasar";
 
 export default defineComponent({
   name: "TodoPage",
+  setup() {
+    const $q = useQuasar();
+
+    function confirmDelete(task) {
+      $q.dialog({
+        title: "Confirmar",
+        message: `Deletar tarefa ${task.title}`,
+        cancel: true,
+        persistent: true,
+      }).onOk(() => {
+        this.tasks.splice(task.index, 1);
+        showNotif();
+      });
+    }
+
+    function showNotif() {
+      $q.notify({
+        message: "Tarefa excluída com sucesso!",
+        color: "primary",
+      });
+    }
+
+    return { confirmDelete };
+  },
   data() {
     return {
       tasks: [
@@ -54,18 +79,19 @@ export default defineComponent({
           description: "Comprar 3x.",
           done: false,
         },
-        {
-          title: "Comprar Bananas",
-          description: "5 cachos não verdes.",
-          done: false,
-        },
       ],
     };
   },
   methods: {
     deleteTask(index) {
-      console.log(`Deleting task with index: ${index}`);
-      this.tasks.splice(index, 1);
+      $q.dialog({
+        title: "Confirmar",
+        message: `Deletar tarefa ${tasks.title}`,
+        cancel: true,
+        persistent: true,
+      }).onOk(() => {
+        this.tasks.splice(index, 1);
+      });
     },
   },
 });
