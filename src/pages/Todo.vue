@@ -2,10 +2,10 @@
   <q-page class="bg-grey-3 column">
     <q-list class="bg-white" separator bordered>
       <q-item
-        v-for="task in tasks"
-        :key="task.id"
+        v-for="(task, index) in tasks"
+        :key="task.index"
         @click="task.done = !task.done"
-        :class="{ 'done bg-blue-1': task.done }"
+        :class="{ 'done bg-blue-grey-2': task.done }"
         clickable
         v-ripple
       >
@@ -19,6 +19,17 @@
         <q-item-section>
           <q-item-label>{{ task.title }}</q-item-label>
           <q-item-label caption>{{ task.description }}</q-item-label>
+        </q-item-section>
+        <!-- <q-item-section v-if="task.done" side> 🍔 </q-item-section> -->
+        <q-item-section v-if="task.done" side>
+          <q-btn
+            @click.stop="deleteTask(index)"
+            flat
+            round
+            dense
+            color="primary"
+            icon="delete"
+          />
         </q-item-section>
       </q-item>
     </q-list>
@@ -34,25 +45,28 @@ export default defineComponent({
     return {
       tasks: [
         {
-          id: 1,
           title: "Buscar a Mel.",
           description: "Pet-Shop fecha ás 10:00.",
           done: true,
         },
         {
-          id: 2,
           title: "Comprar Abacaxi",
           description: "Comprar 3x.",
           done: false,
         },
         {
-          id: 3,
           title: "Comprar Bananas",
           description: "5 cachos não verdes.",
           done: false,
         },
       ],
     };
+  },
+  methods: {
+    deleteTask(index) {
+      console.log(`Deleting task with index: ${index}`);
+      this.tasks.splice(index, 1);
+    },
   },
 });
 </script>
@@ -61,7 +75,7 @@ export default defineComponent({
 .done {
   .q-item__label {
     text-decoration: line-through;
-    color: #bbb;
+    color: rgb(154, 151, 151);
   }
 }
 </style>
