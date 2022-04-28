@@ -32,7 +32,7 @@
         "
       >
         <q-list padding>
-          <q-item clickable v-ripple>
+          <q-item exact to="/" clickable v-ripple>
             <q-item-section avatar>
               <q-icon name="list" />
             </q-item-section>
@@ -40,7 +40,7 @@
             <q-item-section> Todo </q-item-section>
           </q-item>
 
-          <q-item clickable v-ripple>
+          <q-item exact to="/help" clickable v-ripple>
             <q-item-section avatar>
               <q-icon name="help" />
             </q-item-section>
@@ -65,8 +65,14 @@
       </q-img>
     </q-drawer>
 
+    <!--
+          https://stackoverflow.com/questions/64619879/router-view-on-vue-3-doesnt-catch-event-from-child
+         -->
+
     <q-page-container>
-      <router-view />
+      <keep-alive>
+        <router-view />
+      </keep-alive>
     </q-page-container>
   </q-layout>
 </template>
