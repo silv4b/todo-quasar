@@ -1,5 +1,21 @@
 <template>
   <q-page class="bg-grey-3 column">
+    <div class="row q-pa-sm bg-primary">
+      <q-input
+        v-model="newTask"
+        @keyup.enter="addTask"
+        square
+        placeholder="Adicionar Tarefa 😁"
+        class="col"
+        filled
+        bg-color="white"
+        dense
+      >
+        <template v-slot:append>
+          <q-btn @click="addTask" round dense flat icon="add" />
+        </template>
+      </q-input>
+    </div>
     <q-list class="bg-white" separator bordered>
       <q-item
         v-for="task in tasks"
@@ -18,9 +34,8 @@
         </q-item-section>
         <q-item-section>
           <q-item-label>{{ task.title }}</q-item-label>
-          <q-item-label caption>{{ task.description }}</q-item-label>
+          <!-- <q-item-label caption>{{ task.description }}</q-item-label> -->
         </q-item-section>
-        <!-- <q-item-section v-if="task.done" side> 🍔 </q-item-section> -->
         <q-item-section v-if="task.done" side>
           <q-btn
             @click.stop="confirmDelete(task)"
@@ -33,6 +48,10 @@
         </q-item-section>
       </q-item>
     </q-list>
+    <div v-if="!tasks.length" class="no-tasks absolute-center">
+      <q-icon name="check" size="4rem" color="primary"></q-icon>
+      <div class="text-h6 text-primary text-center">Sem tarefas 😢</div>
+    </div>
   </q-page>
 </template>
 
@@ -68,8 +87,9 @@ export default defineComponent({
   },
   data() {
     return {
+      newTask: "",
       tasks: [
-        {
+        /*{
           title: "Buscar a Mel.",
           description: "Pet-Shop fecha ás 10:00.",
           done: true,
@@ -78,7 +98,7 @@ export default defineComponent({
           title: "Comprar Abacaxi",
           description: "Comprar 3x.",
           done: false,
-        },
+        },*/
       ],
     };
   },
@@ -93,6 +113,14 @@ export default defineComponent({
         this.tasks.splice(index, 1);
       });
     },
+    addTask() {
+      console.log("New task!");
+      this.tasks.push({
+        title: this.newTask,
+        done: false,
+      });
+      this.newTask = "";
+    },
   },
 });
 </script>
@@ -103,5 +131,11 @@ export default defineComponent({
     text-decoration: line-through;
     color: rgb(154, 151, 151);
   }
+}
+.no-tasks {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0.6;
 }
 </style>
