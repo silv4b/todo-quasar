@@ -12,7 +12,16 @@
         dense
       >
         <template v-slot:append>
-          <q-btn @click="addTask" round dense flat icon="add" />
+          <q-btn
+            @click="
+              addTask;
+              showNotificationAdd(newTask);
+            "
+            round
+            dense
+            flat
+            icon="add"
+          />
         </template>
       </q-input>
     </div>
@@ -20,7 +29,10 @@
       <q-item
         v-for="task in tasks"
         :key="task.index"
-        @click="task.done = !task.done"
+        @click="
+          task.done = !task.done;
+          showNotificationTask(task);
+        "
         :class="{ 'done bg-blue-grey-2': task.done }"
         clickable
         v-ripple
@@ -72,47 +84,52 @@ export default defineComponent({
         persistent: true,
       }).onOk(() => {
         this.tasks.splice(task.index, 1);
-        showNotif();
+        showNotification(`Tarefa ${task.title} excluída com sucesso!`);
       });
     }
 
-    function showNotif() {
+    function showNotificationAdd(description) {
+      if (description == "") {
+        showNotification("Descrição vazia 😒");
+      }
+    }
+
+    function showNotification(message) {
       $q.notify({
-        message: "Tarefa excluída com sucesso!",
+        message: message,
         color: "primary",
       });
     }
 
-    return { confirmDelete };
+    function showNotificationTask(task) {
+      if (task.done) {
+        $q.notify({
+          message: "Atualizado para não concluída!",
+          color: "primary",
+        });
+        return;
+      } else {
+        $q.notify({
+          message: "Atualizado para concluída!",
+          color: "primary",
+        });
+      }
+    }
+
+    return {
+      confirmDelete,
+      showNotification,
+      showNotificationTask,
+      showNotificationAdd,
+    };
   },
   data() {
     return {
       newTask: "",
-      tasks: [
-        /*{
-          title: "Buscar a Mel.",
-          description: "Pet-Shop fecha ás 10:00.",
-          done: true,
-        },
-        {
-          title: "Comprar Abacaxi",
-          description: "Comprar 3x.",
-          done: false,
-        },*/
-      ],
+      tasks: [],
     };
   },
   methods: {
-    deleteTask(index) {
-      $q.dialog({
-        title: "Confirmar",
-        message: `Deletar tarefa ${tasks.title}`,
-        cancel: true,
-        persistent: true,
-      }).onOk(() => {
-        this.tasks.splice(index, 1);
-      });
-    },
     addTask() {
       console.log("New task!");
       this.tasks.push({
