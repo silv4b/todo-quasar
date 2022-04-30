@@ -7,20 +7,24 @@ node_modules
 /dist
 
 # Cordova related directories and files
+/src-electron/*
 /src-electron/
 /src-electron/icons
 
 # Cordova related directories and files
+/src-cordova/*
 /src-cordova/node_modules
 /src-cordova/platforms
 /src-cordova/plugins
 /src-cordova/www
 
 # Capacitor related directories and files
+/src-capacitor/*
 /src-capacitor/www
 /src-capacitor/node_modules
 
 # BEX related directories and files
+/src-bex/*
 /src-bex/www
 /src-bex/js/core
 
