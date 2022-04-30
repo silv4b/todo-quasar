@@ -1,4 +1,4 @@
-# quasar-todo (quasar-todo)
+# Todo list with Quasar Framework (quasar-todo)
 
 Todo built with quasar
 
@@ -14,6 +14,32 @@ npm install
 
 ```bash
 quasar dev
+```
+
+### Remove/Hide menurbar from electron app (optional)
+
+After generate your electron app with the following command
+
+```bash
+quasar dev -m electron
+#or
+quasar build -m electron
+```
+
+Go to your `src-electron\electron-main.js` and add the specified line below
+
+```javascript
+mainWindow = new BrowserWindow({
+  /*
+  some code here
+  */
+  autoHideMenuBar: true /* <-- >add this line */,
+  webPreferences: {
+    /*
+    some code here too
+    */
+  },
+});
 ```
 
 ### Start the app in development mode fot windows/linux

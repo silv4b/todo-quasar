@@ -3,7 +3,10 @@
     <div class="row q-pa-sm bg-primary">
       <q-input
         v-model="newTask"
-        @keyup.enter="addTask"
+        @keyup.enter="
+          addTask;
+          showNotificationAdd(newTask);
+        "
         square
         placeholder="Adicionar Tarefa 😁"
         class="col"

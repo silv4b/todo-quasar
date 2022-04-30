@@ -13,6 +13,8 @@
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "core-js": "^3.6.5",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
     "quasar": "^2.6.0",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0"
@@ -20,7 +22,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.14",
     "@quasar/app-webpack": "^3.0.0",
-    "electron": "^18.1.0",
+    "electron": "^18.2.0",
     "electron-packager": "^15.5.1",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.1.0",

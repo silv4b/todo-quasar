@@ -6,8 +6,9 @@ node_modules
 .quasar
 /dist
 
-# Quasar scrs folders
-/src-*/
+# Cordova related directories and files
+/src-electron/
+/src-electron/icons
 
 # Cordova related directories and files
 /src-cordova/node_modules
