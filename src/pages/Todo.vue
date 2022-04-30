@@ -3,10 +3,7 @@
     <div class="row q-pa-sm bg-primary">
       <q-input
         v-model="newTask"
-        @keyup.enter="
-          addTask;
-          showNotificationAdd(newTask);
-        "
+        @keyup.enter="addTask"
         square
         placeholder="Adicionar Tarefa 😁"
         class="col"
@@ -15,16 +12,7 @@
         dense
       >
         <template v-slot:append>
-          <q-btn
-            @click="
-              addTask;
-              showNotificationAdd(newTask);
-            "
-            round
-            dense
-            flat
-            icon="add"
-          />
+          <q-btn @click="addTask" round dense flat icon="add" />
         </template>
       </q-input>
     </div>
@@ -34,7 +22,7 @@
         :key="task.index"
         @click="
           task.done = !task.done;
-          showNotificationTask(task);
+          notifyStatusTask(task);
         "
         :class="{ 'done bg-blue-grey-2': task.done }"
         clickable
@@ -49,7 +37,6 @@
         </q-item-section>
         <q-item-section>
           <q-item-label>{{ task.title }}</q-item-label>
-          <!-- <q-item-label caption>{{ task.description }}</q-item-label> -->
         </q-item-section>
         <q-item-section v-if="task.done" side>
           <q-btn
@@ -87,14 +74,8 @@ export default defineComponent({
         persistent: true,
       }).onOk(() => {
         this.tasks.splice(task.index, 1);
-        showNotification(`Tarefa ${task.title} excluída com sucesso!`);
+        showNotification(`Tarefa ${task.title} excluída com sucesso! 👌`);
       });
-    }
-
-    function showNotificationAdd(description) {
-      if (description == "") {
-        showNotification("Descrição vazia 😒");
-      }
     }
 
     function showNotification(message) {
@@ -104,16 +85,15 @@ export default defineComponent({
       });
     }
 
-    function showNotificationTask(task) {
+    function notifyStatusTask(task) {
       if (task.done) {
         $q.notify({
-          message: "Atualizado para não concluída!",
+          message: "Tarefa alterada para concluída! ✅",
           color: "primary",
         });
-        return;
       } else {
         $q.notify({
-          message: "Atualizado para concluída!",
+          message: "Tarefa alterada para não concluída! ❎",
           color: "primary",
         });
       }
@@ -122,8 +102,7 @@ export default defineComponent({
     return {
       confirmDelete,
       showNotification,
-      showNotificationTask,
-      showNotificationAdd,
+      notifyStatusTask,
     };
   },
   data() {
@@ -133,12 +112,22 @@ export default defineComponent({
     };
   },
   methods: {
+    notify(notification) {
+      this.$q.notify({
+        message: notification,
+        color: "primary",
+      });
+    },
     addTask() {
-      console.log("New task!");
+      if (this.newTask == "") {
+        this.notify("Descrição vazia 😒");
+        return;
+      }
       this.tasks.push({
         title: this.newTask,
         done: false,
       });
+      this.notify("Tarefa adicionada com sucesso! 🌻");
       this.newTask = "";
     },
   },
