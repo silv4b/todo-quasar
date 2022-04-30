@@ -66,14 +66,15 @@
       </q-img>
     </q-drawer>
 
-    <!--
-          https://stackoverflow.com/questions/64619879/router-view-on-vue-3-doesnt-catch-event-from-child
-         -->
-
     <q-page-container>
-      <keep-alive>
+      <!-- <keep-alive>
         <router-view />
-      </keep-alive>
+      </keep-alive> -->
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
     </q-page-container>
   </q-layout>
 </template>

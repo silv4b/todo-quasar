@@ -1,3 +1,4 @@
+/*jshint esversion: 11*/
 
 const routes = [
   {
@@ -15,6 +16,6 @@ const routes = [
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue')
   }
-]
+];
 
-export default routes
+export default routes;

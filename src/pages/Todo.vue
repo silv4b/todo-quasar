@@ -122,13 +122,14 @@ export default defineComponent({
       if (this.newTask == "") {
         this.notify("Descrição vazia 😒");
         return;
+      } else {
+        this.tasks.push({
+          title: this.newTask,
+          done: false,
+        });
+        this.notify("Tarefa adicionada com sucesso! 🌻");
+        this.newTask = "";
       }
-      this.tasks.push({
-        title: this.newTask,
-        done: false,
-      });
-      this.notify("Tarefa adicionada com sucesso! 🌻");
-      this.newTask = "";
     },
   },
 });
