@@ -33,7 +33,7 @@ mainWindow = new BrowserWindow({
   /*
   some code here
   */
-  autoHideMenuBar: true /* <-- >add this line */,
+  autoHideMenuBar: true /* <-- add this line */,
   webPreferences: {
     /*
     some code here too

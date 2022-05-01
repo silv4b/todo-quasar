@@ -28,6 +28,7 @@
         clickable
         v-ripple
       >
+        <!-- v-touch-hold:2000.mouse="handleHold" -->
         <q-item-section avatar>
           <q-checkbox
             v-model="task.done"
@@ -48,6 +49,16 @@
             icon="delete"
           />
         </q-item-section>
+        <q-item-section v-else side>
+          <q-btn
+            @click.stop="editTask(task)"
+            flat
+            round
+            dense
+            color="primary"
+            icon="edit"
+          />
+        </q-item-section>
       </q-item>
     </q-list>
     <div v-if="!tasks.length" class="no-tasks absolute-center">
@@ -60,11 +71,13 @@
 <script>
 import { defineComponent } from "vue";
 import { useQuasar } from "quasar";
+import { ref } from "vue";
 
 export default defineComponent({
   name: "TodoPage",
   setup() {
     const $q = useQuasar();
+    const info = ref(null);
 
     function confirmDelete(task) {
       $q.dialog({
@@ -73,7 +86,7 @@ export default defineComponent({
         cancel: true,
         persistent: true,
       }).onOk(() => {
-        this.tasks.splice(task.index, 1);
+        this.tasks.splice(task.sid, 1);
         showNotification(`Tarefa ${task.title} excluída com sucesso! 👌`);
       });
     }
@@ -99,19 +112,57 @@ export default defineComponent({
       }
     }
 
+    function editTask(task) {
+      $q.dialog({
+        title: "Editar tarefa",
+        message: "Edite sua tarefa.",
+        prompt: {
+          model: task.title,
+          type: "text",
+        },
+        cancel: true,
+        persistent: true,
+      }).onOk((data) => {
+        var indexTask = this.tasks.findIndex((x) => x.sId == task.sId);
+        this.tasks[indexTask].title = data;
+        showNotification(`Tarefa ${task.title} editada com sucesso! 👌`);
+      });
+    }
+
+    function handleHold({ evt, ...newInfo }) {
+      info.value = newInfo;
+      console.log(evt);
+    }
+
     return {
       confirmDelete,
       showNotification,
       notifyStatusTask,
+      editTask,
+      handleHold,
     };
   },
   data() {
     return {
       newTask: "",
-      tasks: [],
+      tasks: [
+        {
+          sId: "gyjvo",
+          title: "Tarefa Pré-Carregada feita.",
+          done: true,
+        },
+        {
+          sId: "pygvo",
+          title: "Tarefa Pré-Carregada não feita.",
+          done: false,
+        },
+      ],
     };
   },
   methods: {
+    generateStringId() {
+      return Math.random().toString(36).substring(2, 7);
+    },
     notify(notification) {
       this.$q.notify({
         message: notification,
@@ -123,10 +174,13 @@ export default defineComponent({
         this.notify("Descrição vazia 😒");
         return;
       } else {
+        var id = this.generateStringId();
         this.tasks.push({
+          sId: id,
           title: this.newTask,
           done: false,
         });
+        console.table(this.tasks);
         this.notify("Tarefa adicionada com sucesso! 🌻");
         this.newTask = "";
       }
