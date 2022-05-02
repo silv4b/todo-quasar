@@ -91,7 +91,7 @@ export default defineComponent({
   computed: {
     todaysDate() {
       const timeStamp = Date.now();
-      return date.formatDate(timeStamp, "dddd, D MMMM");
+      return date.formatDate(timeStamp, "dddd, D MMMM.");
     },
   },
 

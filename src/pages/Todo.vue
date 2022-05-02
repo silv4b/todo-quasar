@@ -38,6 +38,9 @@
         </q-item-section>
         <q-item-section>
           <q-item-label>{{ task.title }}</q-item-label>
+          <q-item-label caption
+            >Criada em {{ task.date }} às {{ task.hour }}</q-item-label
+          >
         </q-item-section>
         <q-item-section v-if="task.done" side>
           <q-btn
@@ -70,14 +73,12 @@
 
 <script>
 import { defineComponent } from "vue";
-import { useQuasar } from "quasar";
-import { ref } from "vue";
+import { useQuasar, date } from "quasar";
 
 export default defineComponent({
   name: "TodoPage",
   setup() {
     const $q = useQuasar();
-    const info = ref(null);
 
     function confirmDelete(task) {
       $q.dialog({
@@ -86,7 +87,8 @@ export default defineComponent({
         cancel: true,
         persistent: true,
       }).onOk(() => {
-        this.tasks.splice(task.sid, 1);
+        var taskIndex = this.tasks.indexOf(task);
+        this.tasks.splice(taskIndex, 1);
         showNotification(`Tarefa ${task.title} excluída com sucesso! 👌`);
       });
     }
@@ -129,17 +131,11 @@ export default defineComponent({
       });
     }
 
-    function handleHold({ evt, ...newInfo }) {
-      info.value = newInfo;
-      console.log(evt);
-    }
-
     return {
       confirmDelete,
       showNotification,
       notifyStatusTask,
       editTask,
-      handleHold,
     };
   },
   data() {
@@ -147,14 +143,25 @@ export default defineComponent({
       newTask: "",
       tasks: [
         {
-          sId: "gyjvo",
-          title: "Tarefa Pré-Carregada feita.",
+          sId: "lkjhs",
+          title: "Tarefa 1.",
+          date: "02/05/2022",
+          hour: "00:16:01",
           done: true,
         },
         {
-          sId: "pygvo",
-          title: "Tarefa Pré-Carregada não feita.",
-          done: false,
+          sId: "yuiii",
+          title: "Tarefa 2.",
+          date: "02/05/2022",
+          hour: "00:18:07",
+          done: true,
+        },
+        {
+          sId: "qwrdd",
+          title: "Tarefa 3.",
+          date: "02/05/2022",
+          hour: "00:18:67",
+          done: true,
         },
       ],
     };
@@ -175,12 +182,15 @@ export default defineComponent({
         return;
       } else {
         var id = this.generateStringId();
+        const timeStamp = Date.now();
         this.tasks.push({
           sId: id,
           title: this.newTask,
+          date: date.formatDate(timeStamp, "DD/MM/YYYY"),
+          hour: date.formatDate(timeStamp, "HH:mm:ss"),
           done: false,
         });
-        console.table(this.tasks);
+
         this.notify("Tarefa adicionada com sucesso! 🌻");
         this.newTask = "";
       }
