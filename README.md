@@ -2,7 +2,7 @@
 
 ![Quasar todo app](https://i.imgur.com/Vsn4ilk.jpeg)  
 
-Small to-do list project being built using [Vue3](https://vuejs.org/) and [Quasar](https://quasar.dev/) frameworks, based on the application developed in the [tutorial](https://www.youtube.com/watch?v=GV-D85D9KJQ) available on the [Make Apps with Danny](https://www.youtube.com/channel/UC6eR_ndNgaTeE5t2Ud4ZiHw) channel.
+Small to-do list project being built using [Vue3](https://vuejs.org/) and [Quasar](https://quasar.dev/) framework, based on the application developed in the [tutorial](https://www.youtube.com/watch?v=GV-D85D9KJQ) available on the [Make Apps with Danny](https://www.youtube.com/channel/UC6eR_ndNgaTeE5t2Ud4ZiHw) channel.
 
 ## Install the dependencies
 
