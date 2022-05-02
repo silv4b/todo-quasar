@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <!-- <q-header elevated> -->
-    <q-header>
+    <q-header reveal>
       <q-toolbar>
         <q-btn
           flat
@@ -48,6 +48,14 @@
 
             <q-item-section> Help </q-item-section>
           </q-item>
+
+          <q-item exact to="/login" clickable v-ripple>
+            <q-item-section avatar>
+              <q-icon name="security" />
+            </q-item-section>
+
+            <q-item-section> Login </q-item-section>
+          </q-item>
         </q-list>
       </q-scroll-area>
 
@@ -67,9 +75,6 @@
     </q-drawer>
 
     <q-page-container>
-      <!-- <keep-alive>
-        <router-view />
-      </keep-alive> -->
       <router-view v-slot="{ Component }">
         <keep-alive>
           <component :is="Component" />
