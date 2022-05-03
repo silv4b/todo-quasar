@@ -68,6 +68,9 @@
       <q-icon name="check" size="4rem" color="primary"></q-icon>
       <div class="text-h6 text-primary text-center">Sem tarefas 😢</div>
     </div>
+    <q-page-sticky position="bottom-right" :offset="[18, 18]">
+      <q-btn @click="selectAllTasks(tasks)" fab icon="check" color="primary" />
+    </q-page-sticky>
   </q-page>
 </template>
 
@@ -147,26 +150,34 @@ export default defineComponent({
           title: "Tarefa 1.",
           date: "02/05/2022",
           hour: "00:16:01",
-          done: true,
+          done: false,
         },
         {
           sId: "yuiii",
           title: "Tarefa 2.",
           date: "02/05/2022",
           hour: "00:18:07",
-          done: true,
+          done: false,
         },
         {
           sId: "qwrdd",
           title: "Tarefa 3.",
           date: "02/05/2022",
           hour: "00:18:67",
-          done: true,
+          done: false,
         },
       ],
     };
   },
   methods: {
+    selectAllTasks(tasks) {
+      for (var j = 0; j < tasks.length; j++) {
+        if (tasks[j].done == false) {
+          tasks[j].done = true;
+        }
+      }
+      this.notify("Mancando todas como feitas! 💝");
+    },
     generateStringId() {
       return Math.random().toString(36).substring(2, 7);
     },
