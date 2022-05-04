@@ -133,7 +133,6 @@ export default {
 <style>
 .q-card {
   width: 360px;
-  height: 360px;
 }
 
 .q-px-md {
