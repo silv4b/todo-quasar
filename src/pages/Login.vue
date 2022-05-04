@@ -1,4 +1,3 @@
-MainLayout
 <template>
   <q-page class="bg-primary row justify-center items-center">
     <div class="column">
@@ -29,20 +28,21 @@ MainLayout
           </q-card-section>
           <q-card-actions class="q-px-md">
             <q-btn
-              to="/"
               unelevated
               color="primary"
               size="lg"
               class="full-width"
               label="Login"
+              @Click="verifyRequest()"
             />
           </q-card-actions>
           <q-card-section class="text-center q-pa-none">
             <p>
               <a
                 class="text-grey-6"
-                href="/#/help"
+                href="https://quasar.dev/layout/routing-with-layouts-and-pages"
                 style="text-decoration: none"
+                target="_blank"
                 >Created an Account</a
               >
             </p>
@@ -54,13 +54,60 @@ MainLayout
 </template>
 
 <script>
+import { useQuasar } from "quasar";
+import { onBeforeUnmount } from "vue";
+
 export default {
   name: "LoginPage",
+  setup() {
+    const $q = useQuasar();
+    let timer;
+
+    onBeforeUnmount(() => {
+      if (timer !== void 0) {
+        clearTimeout(timer);
+        $q.loading.hide();
+      }
+    });
+
+    function showLoading() {
+      $q.loading.show();
+      timer = setTimeout(() => {
+        $q.loading.hide();
+        timer = void 0;
+      }, 2000);
+    }
+
+    return {
+      showLoading,
+    };
+  },
   data() {
     return {
       email: "",
       password: "",
     };
+  },
+  methods: {
+    verifyRequest() {
+      if (this.email == "" && this.password == "") {
+        this.$q.notify({
+          message: "Senha/Email vazios 😢",
+          color: "red",
+        });
+      } else {
+        this.email = "";
+        this.password = "";
+        this.showLoading();
+        setTimeout(() => {
+          this.$router.push("/todo");
+        }, 2000);
+      }
+    },
+  },
+  beforeMount() {
+    this.email = "";
+    this.password = "";
   },
 };
 </script>
@@ -68,5 +115,9 @@ export default {
 <style>
 .q-card {
   width: 360px;
+}
+
+.q-px-md {
+  margin-bottom: 1rem;
 }
 </style>

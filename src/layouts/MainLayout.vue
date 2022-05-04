@@ -1,6 +1,5 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <!-- <q-header elevated> -->
     <q-header reveal>
       <q-toolbar>
         <q-btn
@@ -33,7 +32,7 @@
         "
       >
         <q-list padding>
-          <q-item exact to="/" clickable v-ripple>
+          <q-item exact to="/todo" clickable v-ripple>
             <q-item-section avatar>
               <q-icon name="list" />
             </q-item-section>
@@ -49,12 +48,18 @@
             <q-item-section> Help </q-item-section>
           </q-item>
 
-          <q-item exact to="/login" clickable v-ripple>
+          <q-item
+            class="fixed-bottom"
+            exact
+            @Click="logoutDialog()"
+            clickable
+            v-ripple
+          >
             <q-item-section avatar>
-              <q-icon name="security" />
+              <q-icon name="logout" />
             </q-item-section>
 
-            <q-item-section> Login </q-item-section>
+            <q-item-section> Logout </q-item-section>
           </q-item>
         </q-list>
       </q-scroll-area>
@@ -85,30 +90,65 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, onBeforeUnmount } from "vue";
+import { useQuasar } from "quasar";
 import { date } from "quasar";
 
 export default defineComponent({
   name: "MainLayout",
-
   components: {},
-
   computed: {
     todaysDate() {
       const timeStamp = Date.now();
       return date.formatDate(timeStamp, "dddd, D MMMM.");
     },
   },
-
   setup() {
     const leftDrawerOpen = ref(false);
+    const $q = useQuasar();
+    let timer;
+
+    onBeforeUnmount(() => {
+      if (timer !== void 0) {
+        clearTimeout(timer);
+        $q.loading.hide();
+      }
+    });
+
+    function showLoading() {
+      $q.loading.show();
+      timer = setTimeout(() => {
+        $q.loading.hide();
+        timer = void 0;
+      }, 1400);
+    }
+
+    function toggleLeftDrawer() {
+      leftDrawerOpen.value = !leftDrawerOpen.value;
+    }
 
     return {
       leftDrawerOpen,
-      toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value;
-      },
+      toggleLeftDrawer,
+      showLoading,
     };
+  },
+  methods: {
+    logoutDialog() {
+      this.$q
+        .dialog({
+          title: "Confirmar Logout",
+          message: "Deseja mesmo sair do sistema?",
+          cancel: true,
+          persistent: true,
+        })
+        .onOk(() => {
+          this.showLoading();
+          setTimeout(() => {
+            this.$router.push("/");
+          }, 1400);
+        });
+    },
   },
 });
 </script>
