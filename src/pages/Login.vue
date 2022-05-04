@@ -7,14 +7,23 @@
       <div class="row">
         <q-card square bordered class="q-pa-lg shadow-1">
           <q-card-section>
-            <q-form class="q-gutter-md">
+            <q-form
+              ref="myForm"
+              @submit="onSubmit"
+              @reset="onReset"
+              class="q-gutter-md"
+            >
               <q-input
                 square
                 filled
                 clearable
                 v-model="email"
                 type="email"
-                label="email"
+                label="Email"
+                lazy-rules
+                :rules="[
+                  (val) => (val && val.length > 0) || 'Please type something',
+                ]"
               />
               <q-input
                 square
@@ -22,7 +31,11 @@
                 clearable
                 v-model="password"
                 type="password"
-                label="password"
+                label="Senha"
+                lazy-rules
+                :rules="[
+                  (val) => (val && val.length > 0) || 'Please type something',
+                ]"
               />
             </q-form>
           </q-card-section>
@@ -33,6 +46,7 @@
               size="lg"
               class="full-width"
               label="Login"
+              type="submit"
               @Click="verifyRequest()"
             />
           </q-card-actions>
@@ -90,24 +104,28 @@ export default {
   },
   methods: {
     verifyRequest() {
-      if (this.email == "" && this.password == "") {
-        this.$q.notify({
-          message: "Senha/Email vazios 😢",
-          color: "red",
-        });
-      } else {
-        this.email = "";
-        this.password = "";
-        this.showLoading();
-        setTimeout(() => {
-          this.$router.push("/todo");
-        }, 2000);
-      }
+      this.$refs.myForm.validate().then((success) => {
+        if (success) {
+          // yay, models are correct
+          this.email = "";
+          this.password = "";
+
+          this.showLoading();
+          setTimeout(() => {
+            this.$router.push("/todo");
+          }, 2000);
+
+          // to reset validations use:
+          this.$refs.myForm.resetValidation();
+        } else {
+          // at least one invalid value
+          this.$q.notify({
+            message: "Senha e email devem ser informados. 😢",
+            color: "red",
+          });
+        }
+      });
     },
-  },
-  beforeMount() {
-    this.email = "";
-    this.password = "";
   },
 };
 </script>
@@ -115,6 +133,7 @@ export default {
 <style>
 .q-card {
   width: 360px;
+  height: 360px;
 }
 
 .q-px-md {
