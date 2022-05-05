@@ -100,6 +100,12 @@ export default defineComponent({
       $q.notify({
         message: message,
         color: "primary",
+        actions: [
+          {
+            label: "Ok",
+            color: "white",
+          },
+        ],
       });
     }
 
@@ -108,11 +114,23 @@ export default defineComponent({
         $q.notify({
           message: "Tarefa alterada para concluída! ✅",
           color: "primary",
+          actions: [
+            {
+              label: "Ok",
+              color: "white",
+            },
+          ],
         });
       } else {
         $q.notify({
           message: "Tarefa alterada para não concluída! ❎",
           color: "primary",
+          actions: [
+            {
+              label: "Ok",
+              color: "white",
+            },
+          ],
         });
       }
     }
@@ -185,6 +203,18 @@ export default defineComponent({
       this.$q.notify({
         message: notification,
         color: "primary",
+        actions: [
+          {
+            label: "Ok",
+            color: "white",
+            actions: [
+              {
+                label: "Ok",
+                color: "white",
+              },
+            ],
+          },
+        ],
       });
     },
     addTask() {

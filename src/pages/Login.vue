@@ -122,6 +122,18 @@ export default {
           this.$q.notify({
             message: "Senha e email devem ser informados. 😢",
             color: "red",
+            actions: [
+              {
+                label: "Ok",
+                color: "white",
+                actions: [
+                  {
+                    label: "Ok",
+                    color: "white",
+                  },
+                ],
+              },
+            ],
           });
         }
       });
