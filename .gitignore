@@ -39,3 +39,11 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
+
+# Local Netlify folder
+.netlify
+
+# Environment variables
+.env
+.env.prod
+.env.dev
