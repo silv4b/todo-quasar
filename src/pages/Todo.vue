@@ -77,64 +77,35 @@
 <script>
 import { defineComponent } from "vue";
 import { useQuasar, date } from "quasar";
+import useNotify from "../composables/useNotify";
+import useDialog from "../composables/useDialog";
 
 export default defineComponent({
   name: "TodoPage",
   setup() {
     const $q = useQuasar();
+    const { notifySuccess } = useNotify();
+    const { dialogShow } = useDialog();
 
     function confirmDelete(task) {
-      $q.dialog({
-        title: "Confirmar",
-        message: `Deletar tarefa ${task.title}`,
-        cancel: true,
-        persistent: true,
-      }).onOk(() => {
+      dialogShow({ message: `Deletar tarefa ${task.title}?` }).onOk(() => {
         var taskIndex = this.tasks.indexOf(task);
         this.tasks.splice(taskIndex, 1);
-        showNotification(`Tarefa ${task.title} excluída com sucesso! 👌`);
-      });
-    }
-
-    function showNotification(message) {
-      $q.notify({
-        message: message,
-        color: "primary",
-        actions: [
-          {
-            label: "Ok",
-            color: "white",
-          },
-        ],
+        notifySuccess(`Tarefa ${task.title} excluída com sucesso! 👌`);
       });
     }
 
     function notifyStatusTask(task) {
       if (task.done) {
-        $q.notify({
-          message: "Tarefa alterada para concluída! ✅",
-          color: "primary",
-          actions: [
-            {
-              label: "Ok",
-              color: "white",
-            },
-          ],
-        });
+        notifySuccess("Tarefa alterada para concluída! ✅");
       } else {
-        $q.notify({
-          message: "Tarefa alterada para não concluída! ❎",
-          color: "primary",
-          actions: [
-            {
-              label: "Ok",
-              color: "white",
-            },
-          ],
-        });
+        notifySuccess("Tarefa alterada para não concluída! ✅");
       }
     }
 
+    /**
+     * TO-DO: Criar composable de dialog com prompt.
+     * */
     function editTask(task) {
       $q.dialog({
         title: "Editar tarefa",
@@ -148,40 +119,28 @@ export default defineComponent({
       }).onOk((data) => {
         var indexTask = this.tasks.findIndex((x) => x.sId == task.sId);
         this.tasks[indexTask].title = data;
-        showNotification(`Tarefa ${task.title} editada com sucesso! 👌`);
+        notifySuccess(`Tarefa ${task.title} editada com sucesso! 👌`);
       });
     }
 
     return {
       confirmDelete,
-      showNotification,
+      notifySuccess,
       notifyStatusTask,
       editTask,
+      useNotify,
     };
   },
   data() {
     return {
       newTask: "",
+      ntf: useNotify(),
       tasks: [
         {
           sId: "lkjhs",
           title: "Tarefa 1.",
           date: "02/05/2022",
           hour: "00:16:01",
-          done: false,
-        },
-        {
-          sId: "yuiii",
-          title: "Tarefa 2.",
-          date: "02/05/2022",
-          hour: "00:18:07",
-          done: false,
-        },
-        {
-          sId: "qwrdd",
-          title: "Tarefa 3.",
-          date: "02/05/2022",
-          hour: "00:18:67",
           done: false,
         },
       ],
@@ -219,7 +178,7 @@ export default defineComponent({
     },
     addTask() {
       if (this.newTask == "") {
-        this.notify("Descrição vazia 😒");
+        this.ntf.notifyError("Descrição vazia 😒");
         return;
       } else {
         var id = this.generateStringId();
