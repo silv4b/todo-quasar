@@ -12,7 +12,7 @@
         color="white"
         text-color="blue"
         unelevated
-        to="/todo"
+        :to="{ name: 'home' }"
         label="Go Home"
         no-caps
       />

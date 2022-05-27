@@ -32,7 +32,7 @@
         "
       >
         <q-list padding>
-          <q-item exact to="/todo" clickable v-ripple>
+          <q-item exact :to="{ name: 'home' }" clickable v-ripple>
             <q-item-section avatar>
               <q-icon name="list" />
             </q-item-section>
@@ -40,7 +40,7 @@
             <q-item-section> Todo </q-item-section>
           </q-item>
 
-          <q-item exact to="/help" clickable v-ripple>
+          <q-item exact :to="{ name: 'help' }" clickable v-ripple>
             <q-item-section avatar>
               <q-icon name="help" />
             </q-item-section>
@@ -143,10 +143,16 @@ export default defineComponent({
           persistent: true,
         })
         .onOk(() => {
-          this.showLoading();
-          setTimeout(() => {
-            this.$router.push("/");
-          }, 1400);
+          this.$q.notify({
+            message: "Finge que saiu! ✅",
+            color: "primary",
+            actions: [
+              {
+                label: "Ok",
+                color: "white",
+              },
+            ],
+          });
         });
     },
   },
