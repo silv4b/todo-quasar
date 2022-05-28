@@ -68,7 +68,18 @@
       <div class="text-h6 text-primary text-center">Sem tarefas 😢</div>
     </div>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-btn @click="selectAllTasks(tasks)" fab icon="check" color="primary" />
+      <q-fab color="primary" icon="keyboard_arrow_left" direction="left">
+        <q-fab-action
+          color="primary"
+          @click="selectAllTasks(tasks)"
+          icon="check"
+        />
+        <q-fab-action
+          color="primary"
+          @click="deleteAllTasks(tasks)"
+          icon="delete"
+        />
+      </q-fab>
     </q-page-sticky>
   </q-page>
 </template>
@@ -130,34 +141,49 @@ export default defineComponent({
       newTask: "",
       notifyQ: useNotify(),
       dialogQ: useDialog(),
-      tasks: [
-        {
-          sId: "lkjhs",
-          title: "Tarefa 1.",
-          date: "02/05/2022",
-          hour: "00:16:01",
-          done: false,
-        },
-      ],
+      tasks: [],
     };
   },
   methods: {
     selectAllTasks(tasks) {
+      if (tasks.length == 0) return this.notifyQ.notifyWarnig("Lista vazia!");
       this.dialogQ
         .dialogShow({
           tittle: "Confirmar",
           message: "Selecionar todas as tarefas?",
         })
         .onOk(() => {
-          // marca todas as terefas como concluídas.
           for (var j = 0; j < tasks.length; j++) {
             if (tasks[j].done == false) {
               tasks[j].done = true;
             }
           }
+          this.notifyQ.notifySuccess("Mancando todas como feitas! 💝");
         });
+    },
+    deleteAllTasks(tasks) {
+      if (tasks.length == 0) return this.notifyQ.notifyWarnig("Lista vazia!");
+      this.dialogQ
+        .dialogShow({
+          tittle: "Confirmar",
+          message: "Deletar todas as tarefas?",
+        })
+        .onOk(() => {
+          try {
+            var result = tasks.filter(function (task) {
+              return task.done == true;
+            });
 
-      this.notifyQ.notifySuccess("Mancando todas como feitas! 💝");
+            for (var elemento of result) {
+              var index = tasks.indexOf(elemento);
+              tasks.splice(index, 1);
+            }
+
+            this.notifyQ.notifySuccess("Tarefas removidas com sucesso!");
+          } catch (err) {
+            this.notifyQ.showError(err);
+          }
+        });
     },
     generateStringId() {
       return Math.random().toString(36).substring(2, 7);
