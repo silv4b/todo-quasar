@@ -28,7 +28,6 @@
         clickable
         v-ripple
       >
-        <!-- v-touch-hold:2000.mouse="handleHold" -->
         <q-item-section avatar>
           <q-checkbox
             v-model="task.done"
@@ -76,16 +75,15 @@
 
 <script>
 import { defineComponent } from "vue";
-import { useQuasar, date } from "quasar";
+import { date } from "quasar";
 import useNotify from "../composables/useNotify";
 import useDialog from "../composables/useDialog";
 
 export default defineComponent({
   name: "TodoPage",
   setup() {
-    const $q = useQuasar();
     const { notifySuccess } = useNotify();
-    const { dialogShow } = useDialog();
+    const { dialogShow, dialogPromptShow } = useDialog();
 
     function confirmDelete(task) {
       dialogShow({ message: `Deletar tarefa ${task.title}?` }).onOk(() => {
@@ -104,18 +102,14 @@ export default defineComponent({
     }
 
     /**
-     * TO-DO: Criar composable de dialog com prompt.
-     * */
+     * TO-DO: Criar composable de dialog com prompt (done!).
+     */
+
     function editTask(task) {
-      $q.dialog({
+      dialogPromptShow({
         title: "Editar tarefa",
         message: "Edite sua tarefa.",
-        prompt: {
-          model: task.title,
-          type: "text",
-        },
-        cancel: true,
-        persistent: true,
+        prompt: task.title,
       }).onOk((data) => {
         var indexTask = this.tasks.findIndex((x) => x.sId == task.sId);
         this.tasks[indexTask].title = data;
@@ -134,7 +128,8 @@ export default defineComponent({
   data() {
     return {
       newTask: "",
-      ntf: useNotify(),
+      notifyQ: useNotify(),
+      dialogQ: useDialog(),
       tasks: [
         {
           sId: "lkjhs",
@@ -148,37 +143,28 @@ export default defineComponent({
   },
   methods: {
     selectAllTasks(tasks) {
-      for (var j = 0; j < tasks.length; j++) {
-        if (tasks[j].done == false) {
-          tasks[j].done = true;
-        }
-      }
-      this.notify("Mancando todas como feitas! 💝");
+      this.dialogQ
+        .dialogShow({
+          tittle: "Confirmar",
+          message: "Selecionar todas as tarefas?",
+        })
+        .onOk(() => {
+          // marca todas as terefas como concluídas.
+          for (var j = 0; j < tasks.length; j++) {
+            if (tasks[j].done == false) {
+              tasks[j].done = true;
+            }
+          }
+        });
+
+      this.notifyQ.notifySuccess("Mancando todas como feitas! 💝");
     },
     generateStringId() {
       return Math.random().toString(36).substring(2, 7);
     },
-    notify(notification) {
-      this.$q.notify({
-        message: notification,
-        color: "primary",
-        actions: [
-          {
-            label: "Ok",
-            color: "white",
-            actions: [
-              {
-                label: "Ok",
-                color: "white",
-              },
-            ],
-          },
-        ],
-      });
-    },
     addTask() {
       if (this.newTask == "") {
-        this.ntf.notifyError("Descrição vazia 😒");
+        this.notifyQ.notifyError("Descrição vazia 😒");
         return;
       } else {
         var id = this.generateStringId();
@@ -191,7 +177,7 @@ export default defineComponent({
           done: false,
         });
 
-        this.notify("Tarefa adicionada com sucesso! 🌻");
+        this.notifyQ.notifySuccess("Tarefa adicionada com sucesso! 🌻");
         this.newTask = "";
       }
     },
