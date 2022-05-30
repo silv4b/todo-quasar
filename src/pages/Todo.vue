@@ -43,7 +43,7 @@
         </q-item-section>
         <q-item-section v-if="task.done" side>
           <q-btn
-            @click.stop="confirmDelete(task)"
+            @click.stop="deleteTask(task)"
             flat
             round
             dense
@@ -68,7 +68,12 @@
       <div class="text-h6 text-primary text-center">Sem tarefas 😢</div>
     </div>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-fab color="primary" icon="keyboard_arrow_left" direction="left">
+      <q-fab
+        :disable="marcarTodos.value"
+        color="primary"
+        icon="keyboard_arrow_left"
+        direction="left"
+      >
         <q-fab-action
           color="primary"
           @click="selectAllTasks(tasks)"
@@ -96,7 +101,7 @@ export default defineComponent({
     const { notifySuccess } = useNotify();
     const { dialogShow, dialogPromptShow } = useDialog();
 
-    function confirmDelete(task) {
+    function deleteTask(task) {
       dialogShow({ message: `Deletar tarefa ${task.title}?` }).onOk(() => {
         var taskIndex = this.tasks.indexOf(task);
         this.tasks.splice(taskIndex, 1);
@@ -129,7 +134,7 @@ export default defineComponent({
     }
 
     return {
-      confirmDelete,
+      deleteTask,
       notifySuccess,
       notifyStatusTask,
       editTask,
@@ -141,10 +146,18 @@ export default defineComponent({
       newTask: "",
       notifyQ: useNotify(),
       dialogQ: useDialog(),
+      marcarTodos: false, // passar o marcarTodos e todos os métodos de gereciar tasks para o setup()
       tasks: [],
     };
   },
   methods: {
+    enableButton() {
+      if (this.tasks.length == 0) return (marcarTodos = true);
+      else return (marcarTodos = false);
+    },
+    generateStringId() {
+      return Math.random().toString(36).substring(2, 7);
+    },
     selectAllTasks(tasks) {
       if (tasks.length == 0) return this.notifyQ.notifyWarnig("Lista vazia!");
       this.dialogQ
@@ -160,6 +173,7 @@ export default defineComponent({
           }
           this.notifyQ.notifySuccess("Mancando todas como feitas! 💝");
         });
+      this.enableButton();
     },
     deleteAllTasks(tasks) {
       if (tasks.length == 0) return this.notifyQ.notifyWarnig("Lista vazia!");
@@ -184,9 +198,7 @@ export default defineComponent({
             this.notifyQ.showError(err);
           }
         });
-    },
-    generateStringId() {
-      return Math.random().toString(36).substring(2, 7);
+      this.enableButton();
     },
     addTask() {
       if (this.newTask == "") {
@@ -206,6 +218,7 @@ export default defineComponent({
         this.notifyQ.notifySuccess("Tarefa adicionada com sucesso! 🌻");
         this.newTask = "";
       }
+      this.enableButton();
     },
   },
 });
