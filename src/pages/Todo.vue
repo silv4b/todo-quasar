@@ -4,7 +4,7 @@
       <q-input
         v-model="novaTarefa"
         @keyup.enter="
-          addNewTaskRef();
+          addNewTask();
           novaTarefa = '';
         "
         square
@@ -17,7 +17,7 @@
         <template v-slot:append>
           <q-btn
             @click="
-              addNewTaskRef();
+              addNewTask();
               novaTarefa = '';
             "
             round
@@ -99,18 +99,18 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, reactive, ref } from "vue";
 import { date } from "quasar";
 import useNotify from "../composables/useNotify";
 import useDialog from "../composables/useDialog";
 
 export default defineComponent({
   name: "TodoPage",
-  setup(props) {
+  setup() {
     const { notifySuccess, notifyError } = useNotify();
     const { dialogShow, dialogPromptShow } = useDialog();
 
-    let tasks = ref([
+    let tasks = reactive([
       {
         tittle: "Tarefa incompleta 1",
         date: "30/05/2022",
@@ -118,22 +118,13 @@ export default defineComponent({
         hour: "23:39:05",
         sId: "asdas",
       },
-      // {
-      //   tittle: "Tarefa completa 1",
-      //   date: "30/05/2022",
-      //   status: true,
-      //   hour: "23:38:05",
-      //   sId: "jdog2",
-      // },
     ]);
 
-    let novaTarefa = ref(""); // referência da nova tarefa
+    let novaTarefa = ref("");
 
     function changeStatusTask(task) {
-      console.log(task.tittle);
-      var indexTask = tasks.value.findIndex((x) => x.sId == task.sId);
-      console.log(indexTask);
-      //tasks[indexTask].status = !tasks[indexTask].status;
+      var indexTask = tasks.findIndex((x) => x.sId == task.sId);
+      tasks[indexTask].status = !tasks[indexTask].status;
     }
 
     function addNewTask() {
@@ -143,7 +134,7 @@ export default defineComponent({
       } else {
         var id = Math.random().toString(36).substring(2, 7);
         const timeStamp = Date.now();
-        tasks.value.push({
+        tasks.push({
           sId: id,
           tittle: novaTarefa.value,
           date: date.formatDate(timeStamp, "DD/MM/YYYY"),
@@ -152,31 +143,13 @@ export default defineComponent({
         });
 
         notifySuccess("Tarefa adicionada com sucesso!");
-        console.log(novaTarefa.value);
-        console.log(tasks);
       }
     }
 
-    const addNewTaskRef = () => {
-      if (novaTarefa.value != "") {
-        var id = Math.random().toString(36).substring(2, 7);
-        const timeStamp = Date.now();
-        tasks.value.push({
-          sId: id,
-          tittle: novaTarefa.value,
-          date: date.formatDate(timeStamp, "DD/MM/YYYY"),
-          hour: date.formatDate(timeStamp, "HH:mm:ss"),
-          status: false,
-        });
-        return;
-      }
-      notifyError("Campor vazio.");
-    };
-
     function deleteTask(task) {
       dialogShow({ message: `Deletar tarefa ${task.tittle}?` }).onOk(() => {
-        var taskIndex = tasks.value.indexOf(task);
-        tasks.value.splice(taskIndex, 1);
+        var taskIndex = tasks.indexOf(task);
+        tasks.splice(taskIndex, 1);
         notifySuccess(`Tarefa ${task.tittle} excluída com sucesso!`);
       });
     }
@@ -223,9 +196,8 @@ export default defineComponent({
         message: "Edite sua tarefa.",
         prompt: task.tittle,
       }).onOk((data) => {
-        var indexTask = tasks.value.findIndex((x) => x.sId == task.sId);
+        var indexTask = tasks.findIndex((x) => x.sId == task.sId);
         tasks[indexTask].tittle = data;
-        console.log(task);
         notifySuccess(`Tarefa ${task.tittle} editada com sucesso!`);
       });
     }
