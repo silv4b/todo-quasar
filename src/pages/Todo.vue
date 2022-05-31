@@ -207,7 +207,6 @@ export default defineComponent({
       novaTarefa,
       changeStatusTask,
       addNewTask,
-      addNewTaskRef,
       selectAllTasks,
       deleteAllTasks,
       deleteTask,
