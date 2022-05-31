@@ -68,12 +68,7 @@
       <div class="text-h6 text-primary text-center">Sem tarefas 😢</div>
     </div>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-fab
-        :disable="marcarTodos.value"
-        color="primary"
-        icon="keyboard_arrow_left"
-        direction="left"
-      >
+      <q-fab color="primary" icon="keyboard_arrow_left" direction="left">
         <q-fab-action
           color="primary"
           @click="selectAllTasks(tasks)"
@@ -146,15 +141,10 @@ export default defineComponent({
       newTask: "",
       notifyQ: useNotify(),
       dialogQ: useDialog(),
-      marcarTodos: false, // passar o marcarTodos e todos os métodos de gereciar tasks para o setup()
       tasks: [],
     };
   },
   methods: {
-    enableButton() {
-      if (this.tasks.length == 0) return (marcarTodos = true);
-      else return (marcarTodos = false);
-    },
     generateStringId() {
       return Math.random().toString(36).substring(2, 7);
     },
@@ -173,7 +163,6 @@ export default defineComponent({
           }
           this.notifyQ.notifySuccess("Mancando todas como feitas! 💝");
         });
-      this.enableButton();
     },
     deleteAllTasks(tasks) {
       if (tasks.length == 0) return this.notifyQ.notifyWarnig("Lista vazia!");
@@ -198,7 +187,6 @@ export default defineComponent({
             this.notifyQ.showError(err);
           }
         });
-      this.enableButton();
     },
     addTask() {
       if (this.newTask == "") {
@@ -218,7 +206,6 @@ export default defineComponent({
         this.notifyQ.notifySuccess("Tarefa adicionada com sucesso! 🌻");
         this.newTask = "";
       }
-      this.enableButton();
     },
   },
 });
