@@ -2,17 +2,29 @@
   <q-page class="bg-grey-3 column">
     <div class="row q-pa-sm bg-primary">
       <q-input
-        v-model="newTask"
-        @keyup.enter="addTask"
+        v-model="novaTarefa"
+        @keyup.enter="
+          addNewTask();
+          novaTarefa = '';
+        "
         square
-        placeholder="Adicionar Tarefa 😁"
+        placeholder="Adicione uma tarefa."
         class="col"
         filled
         bg-color="white"
         dense
       >
         <template v-slot:append>
-          <q-btn @click="addTask" round dense flat icon="add" />
+          <q-btn
+            @click="
+              addNewTask();
+              novaTarefa = '';
+            "
+            round
+            dense
+            flat
+            icon="add"
+          />
         </template>
       </q-input>
     </div>
@@ -20,31 +32,27 @@
       <q-item
         v-for="task in tasks"
         :key="task.index"
-        @click="
-          task.done = !task.done;
-          notifyStatusTask(task);
-        "
-        :class="{ 'done bg-blue-grey-2': task.done }"
+        @click="changeStatusTask(task)"
+        :class="{ 'status bg-blue-grey-2': task.status }"
         clickable
         v-ripple
       >
-        <!-- v-touch-hold:2000.mouse="handleHold" -->
         <q-item-section avatar>
           <q-checkbox
-            v-model="task.done"
+            v-model="task.status"
             class="no-pointer-events"
             color="primary"
           />
         </q-item-section>
         <q-item-section>
-          <q-item-label>{{ task.title }}</q-item-label>
+          <q-item-label>{{ task.tittle }}</q-item-label>
           <q-item-label caption
             >Criada em {{ task.date }} às {{ task.hour }}</q-item-label
           >
         </q-item-section>
-        <q-item-section v-if="task.done" side>
+        <q-item-section v-if="task.status" side>
           <q-btn
-            @click.stop="confirmDelete(task)"
+            @click.stop="deleteTask(task)"
             flat
             round
             dense
@@ -69,179 +77,149 @@
       <div class="text-h6 text-primary text-center">Sem tarefas 😢</div>
     </div>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-btn @click="selectAllTasks(tasks)" fab icon="check" color="primary" />
+      <q-fab
+        :disable="tasks.length == 0"
+        color="primary"
+        icon="keyboard_arrow_left"
+        direction="left"
+      >
+        <q-fab-action
+          color="primary"
+          @click="selectAllTasks(tasks)"
+          icon="check"
+        />
+        <q-fab-action
+          color="primary"
+          @click="deleteAllTasks(tasks)"
+          icon="delete"
+        />
+      </q-fab>
     </q-page-sticky>
   </q-page>
 </template>
 
 <script>
-import { defineComponent } from "vue";
-import { useQuasar, date } from "quasar";
+import { defineComponent, reactive, ref } from "vue";
+import { date } from "quasar";
+import useNotify from "../composables/useNotify";
+import useDialog from "../composables/useDialog";
 
 export default defineComponent({
   name: "TodoPage",
   setup() {
-    const $q = useQuasar();
+    const { notifySuccess, notifyError } = useNotify();
+    const { dialogShow, dialogPromptShow } = useDialog();
 
-    function confirmDelete(task) {
-      $q.dialog({
-        title: "Confirmar",
-        message: `Deletar tarefa ${task.title}`,
-        cancel: true,
-        persistent: true,
-      }).onOk(() => {
-        var taskIndex = this.tasks.indexOf(task);
-        this.tasks.splice(taskIndex, 1);
-        showNotification(`Tarefa ${task.title} excluída com sucesso! 👌`);
-      });
+    let tasks = reactive([
+      {
+        tittle: "Tarefa incompleta 1",
+        date: "30/05/2022",
+        status: false,
+        hour: "23:39:05",
+        sId: "asdas",
+      },
+    ]);
+
+    let novaTarefa = ref("");
+
+    function changeStatusTask(task) {
+      var indexTask = tasks.findIndex((x) => x.sId == task.sId);
+      tasks[indexTask].status = !tasks[indexTask].status;
     }
 
-    function showNotification(message) {
-      $q.notify({
-        message: message,
-        color: "primary",
-        actions: [
-          {
-            label: "Ok",
-            color: "white",
-          },
-        ],
-      });
-    }
-
-    function notifyStatusTask(task) {
-      if (task.done) {
-        $q.notify({
-          message: "Tarefa alterada para concluída! ✅",
-          color: "primary",
-          actions: [
-            {
-              label: "Ok",
-              color: "white",
-            },
-          ],
-        });
+    function addNewTask() {
+      if (novaTarefa.value == "") {
+        notifyError("Descrição vazia!");
+        return;
       } else {
-        $q.notify({
-          message: "Tarefa alterada para não concluída! ❎",
-          color: "primary",
-          actions: [
-            {
-              label: "Ok",
-              color: "white",
-            },
-          ],
+        var id = Math.random().toString(36).substring(2, 7);
+        const timeStamp = Date.now();
+        tasks.push({
+          sId: id,
+          tittle: novaTarefa.value,
+          date: date.formatDate(timeStamp, "DD/MM/YYYY"),
+          hour: date.formatDate(timeStamp, "HH:mm:ss"),
+          status: false,
         });
+
+        notifySuccess("Tarefa adicionada com sucesso!");
       }
+    }
+
+    function deleteTask(task) {
+      dialogShow({ message: `Deletar tarefa ${task.tittle}?` }).onOk(() => {
+        var taskIndex = tasks.indexOf(task);
+        tasks.splice(taskIndex, 1);
+        notifySuccess(`Tarefa ${task.tittle} excluída com sucesso!`);
+      });
+    }
+
+    function selectAllTasks(tasks) {
+      if (tasks.length == 0) return notifyError("Lista vazia!");
+      dialogShow({
+        tittle: "Confirmar",
+        message: "Selecionar todas as tarefas?",
+      }).onOk(() => {
+        for (var j = 0; j < tasks.length; j++) {
+          if (tasks[j].status == false) {
+            tasks[j].status = true;
+          }
+        }
+        notifySuccess("Mancando todas como feitas!");
+      });
+    }
+
+    function deleteAllTasks(tasks) {
+      if (tasks.length == 0) return notifyError("Lista vazia!");
+      dialogShow({
+        tittle: "Confirmar",
+        message: "Deletar todas as tarefas?",
+      }).onOk(() => {
+        try {
+          var result = tasks.filter(function (task) {
+            return task.status == true;
+          });
+          for (var elemento of result) {
+            var index = tasks.indexOf(elemento);
+            tasks.splice(index, 1);
+          }
+          notifySuccess("Tarefas removidas com sucesso!");
+        } catch (err) {
+          showError(err);
+        }
+      });
     }
 
     function editTask(task) {
-      $q.dialog({
-        title: "Editar tarefa",
+      dialogPromptShow({
+        tittle: "Editar tarefa",
         message: "Edite sua tarefa.",
-        prompt: {
-          model: task.title,
-          type: "text",
-        },
-        cancel: true,
-        persistent: true,
+        prompt: task.tittle,
       }).onOk((data) => {
-        var indexTask = this.tasks.findIndex((x) => x.sId == task.sId);
-        this.tasks[indexTask].title = data;
-        showNotification(`Tarefa ${task.title} editada com sucesso! 👌`);
+        var indexTask = tasks.findIndex((x) => x.sId == task.sId);
+        tasks[indexTask].tittle = data;
+        notifySuccess(`Tarefa ${task.tittle} editada com sucesso!`);
       });
     }
 
     return {
-      confirmDelete,
-      showNotification,
-      notifyStatusTask,
+      tasks,
+      novaTarefa,
+      changeStatusTask,
+      addNewTask,
+      selectAllTasks,
+      deleteAllTasks,
+      deleteTask,
+      notifySuccess,
       editTask,
+      useNotify,
     };
-  },
-  data() {
-    return {
-      newTask: "",
-      tasks: [
-        {
-          sId: "lkjhs",
-          title: "Tarefa 1.",
-          date: "02/05/2022",
-          hour: "00:16:01",
-          done: false,
-        },
-        {
-          sId: "yuiii",
-          title: "Tarefa 2.",
-          date: "02/05/2022",
-          hour: "00:18:07",
-          done: false,
-        },
-        {
-          sId: "qwrdd",
-          title: "Tarefa 3.",
-          date: "02/05/2022",
-          hour: "00:18:67",
-          done: false,
-        },
-      ],
-    };
-  },
-  methods: {
-    selectAllTasks(tasks) {
-      for (var j = 0; j < tasks.length; j++) {
-        if (tasks[j].done == false) {
-          tasks[j].done = true;
-        }
-      }
-      this.notify("Mancando todas como feitas! 💝");
-    },
-    generateStringId() {
-      return Math.random().toString(36).substring(2, 7);
-    },
-    notify(notification) {
-      this.$q.notify({
-        message: notification,
-        color: "primary",
-        actions: [
-          {
-            label: "Ok",
-            color: "white",
-            actions: [
-              {
-                label: "Ok",
-                color: "white",
-              },
-            ],
-          },
-        ],
-      });
-    },
-    addTask() {
-      if (this.newTask == "") {
-        this.notify("Descrição vazia 😒");
-        return;
-      } else {
-        var id = this.generateStringId();
-        const timeStamp = Date.now();
-        this.tasks.push({
-          sId: id,
-          title: this.newTask,
-          date: date.formatDate(timeStamp, "DD/MM/YYYY"),
-          hour: date.formatDate(timeStamp, "HH:mm:ss"),
-          done: false,
-        });
-
-        this.notify("Tarefa adicionada com sucesso! 🌻");
-        this.newTask = "";
-      }
-    },
   },
 });
 </script>
 
 <style lang="scss">
-.done {
+.status {
   .q-item__label {
     text-decoration: line-through;
     color: rgb(154, 151, 151);

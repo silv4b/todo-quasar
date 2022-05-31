@@ -91,8 +91,9 @@
 
 <script>
 import { defineComponent, ref, onBeforeUnmount } from "vue";
-import { useQuasar } from "quasar";
-import { date } from "quasar";
+import { useQuasar, date } from "quasar";
+import useNotify from "../composables/useNotify";
+import useDialog from "../composables/useDialog";
 
 export default defineComponent({
   name: "MainLayout",
@@ -106,6 +107,7 @@ export default defineComponent({
   setup() {
     const leftDrawerOpen = ref(false);
     const $q = useQuasar();
+
     let timer;
 
     onBeforeUnmount(() => {
@@ -133,26 +135,21 @@ export default defineComponent({
       showLoading,
     };
   },
+  data() {
+    return {
+      notifyQ: useNotify(),
+      dialogQ: useDialog(),
+    };
+  },
   methods: {
     logoutDialog() {
-      this.$q
-        .dialog({
-          title: "Confirmar Logout",
+      this.dialogQ
+        .dialogShow({
+          tittle: "Confirmar",
           message: "Deseja mesmo sair do sistema?",
-          cancel: true,
-          persistent: true,
         })
         .onOk(() => {
-          this.$q.notify({
-            message: "Finge que saiu! ✅",
-            color: "primary",
-            actions: [
-              {
-                label: "Ok",
-                color: "white",
-              },
-            ],
-          });
+          this.notifyQ.notifySuccess("Finge que saiu! ✅");
         });
     },
   },

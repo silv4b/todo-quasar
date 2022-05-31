@@ -11,6 +11,9 @@ node_modules
 /src-electron/
 /src-electron/icons
 
+# PWA related directories and files
+/src-pwa/*
+
 # Cordova related directories and files
 /src-cordova/*
 /src-cordova/node_modules
