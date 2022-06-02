@@ -74,7 +74,7 @@
     </q-list>
     <div v-if="!tasks.length" class="no-tasks absolute-center">
       <q-icon name="check" size="4rem" color="primary"></q-icon>
-      <div class="text-h6 text-primary text-center">Sem tarefas 😢</div>
+      <div class="text-h6 text-primary text-center">Sem tarefas!</div>
     </div>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-fab
@@ -110,7 +110,11 @@ export default defineComponent({
     const { notifySuccess, notifyError } = useNotify();
     const { dialogShow, dialogPromptShow } = useDialog();
 
-    let tasks = reactive([
+    let tasks = reactive(JSON.parse(localStorage.getItem("my_tasks")) || []);
+    let novaTarefa = ref("");
+
+    /**
+      let tasks = reactive([
       {
         tittle: "Tarefa incompleta 1",
         date: "30/05/2022",
@@ -118,13 +122,21 @@ export default defineComponent({
         hour: "23:39:05",
         sId: "asdas",
       },
-    ]);
+      ]);
 
-    let novaTarefa = ref("");
+     */
+
+    /** Sources
+     * https://blog.logrocket.com/localstorage-javascript-complete-guide
+     * https://social.msdn.microsoft.com/Forums/en-US/f8795f0e-e482-455f-9ee9-780476f93552/delete-an-item-in-array-which-is-stored-in-localstorage
+     */
 
     function changeStatusTask(task) {
       var indexTask = tasks.findIndex((x) => x.sId == task.sId);
       tasks[indexTask].status = !tasks[indexTask].status;
+
+      localStorage.removeItem("my_tasks");
+      localStorage.setItem("my_tasks", JSON.stringify(tasks));
     }
 
     function addNewTask() {
@@ -142,6 +154,7 @@ export default defineComponent({
           status: false,
         });
 
+        localStorage.setItem("my_tasks", JSON.stringify(tasks));
         notifySuccess("Tarefa adicionada com sucesso!");
       }
     }
@@ -150,6 +163,10 @@ export default defineComponent({
       dialogShow({ message: `Deletar tarefa ${task.tittle}?` }).onOk(() => {
         var taskIndex = tasks.indexOf(task);
         tasks.splice(taskIndex, 1);
+
+        localStorage.removeItem("my_tasks");
+        localStorage.setItem("my_tasks", JSON.stringify(tasks));
+
         notifySuccess(`Tarefa ${task.tittle} excluída com sucesso!`);
       });
     }
@@ -165,6 +182,8 @@ export default defineComponent({
             tasks[j].status = true;
           }
         }
+        localStorage.removeItem("my_tasks");
+        localStorage.setItem("my_tasks", JSON.stringify(tasks));
         notifySuccess("Mancando todas como feitas!");
       });
     }
@@ -183,6 +202,8 @@ export default defineComponent({
             var index = tasks.indexOf(elemento);
             tasks.splice(index, 1);
           }
+          localStorage.removeItem("my_tasks");
+          localStorage.setItem("my_tasks", JSON.stringify(tasks));
           notifySuccess("Tarefas removidas com sucesso!");
         } catch (err) {
           showError(err);
@@ -198,6 +219,8 @@ export default defineComponent({
       }).onOk((data) => {
         var indexTask = tasks.findIndex((x) => x.sId == task.sId);
         tasks[indexTask].tittle = data;
+        localStorage.removeItem("my_tasks");
+        localStorage.setItem("my_tasks", JSON.stringify(tasks));
         notifySuccess(`Tarefa ${task.tittle} editada com sucesso!`);
       });
     }
