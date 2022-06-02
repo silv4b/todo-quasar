@@ -84,9 +84,16 @@
         direction="left"
       >
         <q-fab-action
+          :disable="allDone"
           color="primary"
           @click="selectAllTasks(tasks)"
           icon="check"
+        />
+        <q-fab-action
+          :disable="allDone"
+          color="primary"
+          @click="deselectAllTasks(tasks)"
+          icon="remove"
         />
         <q-fab-action
           color="primary"
@@ -112,19 +119,7 @@ export default defineComponent({
 
     let tasks = reactive(JSON.parse(localStorage.getItem("my_tasks")) || []);
     let novaTarefa = ref("");
-
-    /**
-      let tasks = reactive([
-      {
-        tittle: "Tarefa incompleta 1",
-        date: "30/05/2022",
-        status: false,
-        hour: "23:39:05",
-        sId: "asdas",
-      },
-      ]);
-
-     */
+    let allDone = false;
 
     /** Sources
      * https://blog.logrocket.com/localstorage-javascript-complete-guide
@@ -184,6 +179,24 @@ export default defineComponent({
         }
         localStorage.removeItem("my_tasks");
         localStorage.setItem("my_tasks", JSON.stringify(tasks));
+        allDone = true;
+        notifySuccess("Desmarcancando todas como feitas!");
+      });
+    }
+    function deselectAllTasks(tasks) {
+      if (tasks.length == 0) return notifyError("Lista vazia!");
+      dialogShow({
+        tittle: "Confirmar",
+        message: "Desmarcar todas as tarefas?",
+      }).onOk(() => {
+        for (var j = 0; j < tasks.length; j++) {
+          if (tasks[j].status == true) {
+            tasks[j].status = false;
+          }
+        }
+        localStorage.removeItem("my_tasks");
+        localStorage.setItem("my_tasks", JSON.stringify(tasks));
+        allDone = false;
         notifySuccess("Mancando todas como feitas!");
       });
     }
@@ -228,9 +241,11 @@ export default defineComponent({
     return {
       tasks,
       novaTarefa,
+      allDone,
       changeStatusTask,
       addNewTask,
       selectAllTasks,
+      deselectAllTasks,
       deleteAllTasks,
       deleteTask,
       notifySuccess,
