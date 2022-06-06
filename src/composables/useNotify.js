@@ -31,7 +31,7 @@ export default function useNotify() {
     });
   };
 
-  const notifyWarnig = (message) => {
+  const notifyWarning = (message) => {
     $q.notify({
       type: 'warning',
       message: message || "Atenção ⚠️",
@@ -47,14 +47,14 @@ export default function useNotify() {
   };
 
   const notifyOngoing = (onMessage, message, type) => {
-    const notif = $q.notify({
+    const notify = $q.notify({
       type: 'ongoing',
       textColor: 'white',
       message: onMessage || "Um momento... ⏱️",
     });
 
     setTimeout(() => {
-      notif({
+      notify({
         type: type,
         message: message || 'Retorno do setTimeout',
         timeout: 2000,
@@ -72,7 +72,7 @@ export default function useNotify() {
   return {
     notifySuccess,
     notifyError,
-    notifyWarnig,
+    notifyWarning,
     notifyOngoing
   };
 }
