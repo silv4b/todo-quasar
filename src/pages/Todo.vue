@@ -78,7 +78,7 @@
     </div>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-fab
-        :disable="tasks.length == 0"
+        :disable="tasks.length === 0"
         color="primary"
         icon="keyboard_arrow_left"
         direction="left"
@@ -127,7 +127,7 @@ export default defineComponent({
      */
 
     function changeStatusTask(task) {
-      var indexTask = tasks.findIndex((x) => x.sId == task.sId);
+      let indexTask = tasks.findIndex((x) => x.sId === task.sId);
       tasks[indexTask].status = !tasks[indexTask].status;
 
       localStorage.removeItem("my_tasks");
@@ -135,11 +135,11 @@ export default defineComponent({
     }
 
     function addNewTask() {
-      if (novaTarefa.value == "") {
+      if (novaTarefa.value === "") {
         notifyError("Descrição vazia!");
-        return;
+        //return;
       } else {
-        var id = Math.random().toString(36).substring(2, 7);
+        let id = Math.random().toString(36).substring(2, 7);
         const timeStamp = Date.now();
         tasks.push({
           sId: id,
@@ -156,7 +156,7 @@ export default defineComponent({
 
     function deleteTask(task) {
       dialogShow({ message: `Deletar tarefa ${task.tittle}?` }).onOk(() => {
-        var taskIndex = tasks.indexOf(task);
+        let taskIndex = tasks.indexOf(task);
         tasks.splice(taskIndex, 1);
 
         localStorage.removeItem("my_tasks");
@@ -167,30 +167,30 @@ export default defineComponent({
     }
 
     function selectAllTasks(tasks) {
-      if (tasks.length == 0) return notifyError("Lista vazia!");
+      if (tasks.length === 0) return notifyError("Lista vazia!");
       dialogShow({
         tittle: "Confirmar",
         message: "Selecionar todas as tarefas?",
       }).onOk(() => {
-        for (var j = 0; j < tasks.length; j++) {
-          if (tasks[j].status == false) {
+        for (let j = 0; j < tasks.length; j++) {
+          if (tasks[j].status === false) {
             tasks[j].status = true;
           }
         }
         localStorage.removeItem("my_tasks");
         localStorage.setItem("my_tasks", JSON.stringify(tasks));
         allDone = true;
-        notifySuccess("Desmarcancando todas como feitas!");
+        notifySuccess("Desmarcando todas como feitas!");
       });
     }
     function deselectAllTasks(tasks) {
-      if (tasks.length == 0) return notifyError("Lista vazia!");
+      if (tasks.length === 0) return notifyError("Lista vazia!");
       dialogShow({
         tittle: "Confirmar",
         message: "Desmarcar todas as tarefas?",
       }).onOk(() => {
-        for (var j = 0; j < tasks.length; j++) {
-          if (tasks[j].status == true) {
+        for (let j = 0; j < tasks.length; j++) {
+          if (tasks[j].status === true) {
             tasks[j].status = false;
           }
         }
@@ -202,17 +202,17 @@ export default defineComponent({
     }
 
     function deleteAllTasks(tasks) {
-      if (tasks.length == 0) return notifyError("Lista vazia!");
+      if (tasks.length === 0) return notifyError("Lista vazia!");
       dialogShow({
         tittle: "Confirmar",
         message: "Deletar todas as tarefas?",
       }).onOk(() => {
         try {
-          var result = tasks.filter(function (task) {
-            return task.status == true;
+          let result = tasks.filter(function (task) {
+            return task.status === true;
           });
-          for (var elemento of result) {
-            var index = tasks.indexOf(elemento);
+          for (let elemento of result) {
+            let index = tasks.indexOf(elemento);
             tasks.splice(index, 1);
           }
           localStorage.removeItem("my_tasks");
@@ -230,7 +230,7 @@ export default defineComponent({
         message: "Edite sua tarefa.",
         prompt: task.tittle,
       }).onOk((data) => {
-        var indexTask = tasks.findIndex((x) => x.sId == task.sId);
+        let indexTask = tasks.findIndex((x) => x.sId === task.sId);
         tasks[indexTask].tittle = data;
         localStorage.removeItem("my_tasks");
         localStorage.setItem("my_tasks", JSON.stringify(tasks));
